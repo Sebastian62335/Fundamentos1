@@ -14,6 +14,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -56,9 +57,41 @@ public class FundamentosApp implements CommandLineRunner {
     public void run(String... args) {
 
         saveUsersInDb();
+        getInformationJpqlFromUser();
     }
 
+    private void getInformationJpqlFromUser(){
+        logger.info("Usuario con el metodo findmyuseremail"+userRepository.findMyUserByEmail("john@domain.com").
+                orElseThrow(()->new RuntimeException("no se encontro el usuario")));
+        userRepository.findByAndSort("Test", Sort.by("id").ascending())
+                .stream()
+                .forEach(user -> logger.info("Usuario con metodo sort "+user));
+        userRepository.findByName("John")
+                .stream()
+                .forEach(user -> logger.info("usuario con query method"+user));
+        logger.info("usuario encontrado con query method find by name and email"+
+                userRepository.findUsersByNameAndAndEmail("Daniela", "daniela@domain.com").
+                orElseThrow(()->new RuntimeException(" usuario no encontrado")));
+        userRepository.findByNameLike("%t%")
+                .stream()
+                .forEach(user -> logger.info("usuario encontrado con find by namelike"+user));
+        userRepository.findUsersByNameOrEmail(null,"Test1@domain.com")
+                .stream()
+                .forEach(user -> logger.info("usuario encontrado con find by nameoremail"+user));
+        userRepository.findByBirthDateBetween(LocalDate.of(2021,03,01),LocalDate.of(2022,05,19))
+                .stream()
+                .forEach(user -> logger.info("usuario encontrado entre fechas "+user));
+        userRepository.findByNameLikeOrderByIdDesc("%Test%")
+                .stream()
+                .forEach(user -> logger.info("usuario encontrado con find by findByNameLikeOrderByIdDesc"+user));
+        userRepository.findByNameContainingOrderByIdDesc("Test")
+                .stream()
+                .forEach(user -> logger.info("usuario encontrado con find by findByNameContainingOrderByIdDesc"+user));
+        logger.info("El usuario a partir de named parameter es "+ userRepository.findByNameOrEmail("John",
+                        "john@domain.com")
+                .orElseThrow(()->new RuntimeException("No se encontro nada")));
 
+    }
 
 
     private void saveUsersInDb() {

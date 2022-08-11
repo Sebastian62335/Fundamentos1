@@ -16,6 +16,6 @@ public class TestController {
     }
     @GetMapping("/users")
     List<User> list(){
-        return userRepository.findByNameLike("%T%");
+        return userRepository.findByName("%T%");
     }
 }

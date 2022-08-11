@@ -1,5 +1,6 @@
 package com.platzi.springboot.repository;
 
+
 import com.platzi.springboot.entity.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,18 +23,19 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u where u.name like ?1%")
     List<User> findByAndSort(String name, Sort sort);
 
-//    List<User> findByNameOrderById(String name);
+   List<User> findByNameOrderById(String name);
 
     List<User> findByNameContaining(String name);
 
     //… where x.firstname like ?1
-    List<User> findByNameLike(String name);
+    List<User> findByName(String name);
 
     //… where x.name = ?1 and x.email = ?2
     Optional<User> findUsersByNameAndAndEmail(String name, String email);
+    List<User> findByNameLike(String name);
 
     //… where x.name = ?1 or x.email = ?2
-    Optional<User> findUsersByNameOrAndEmail(String name, String email);
+    List<User> findUsersByNameOrEmail(String name, String email);
 
     //… where x.birthDate between ?1 and ?2
     List<User> findByBirthDateBetween(LocalDate begin, LocalDate end);
@@ -43,7 +45,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     //… where x.age = ?1 order by x.lastname desc
     List<User> findByNameContainingOrderByIdDesc(String name);
-
     //Using Named Parameters
     @Query("select u from User u where u.name = :name or u.email = :email")
     Optional<User> findByNameOrEmail(@Param("name") String name,
